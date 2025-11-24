@@ -1,0 +1,154 @@
+.services-section {
+  // Блок
+  padding: 80px 0;
+  background-color: $default;
+  color: $text;
+  text-align: center;
+
+  // Елементи
+  &__container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  &__main-title {
+    font-size: 52px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: $text;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  // --- Секція Табів (Вкладки) ---
+  &__tabs-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; // Для адаптивності
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid rgba($text, 0.1); // Ненав'язлива лінія під табами
+    padding-bottom: 10px;
+  }
+
+  &__tab {
+    // Стиль кнопки
+    background: transparent;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: rgba($text, 0.7); // Неактивний колір
+    transition: all 0.3s ease;
+    position: relative;
+    outline: none;
+
+    &:hover:not(&--active) {
+      color: $text;
+    }
+
+    // Модифікатор для активної вкладки
+    &--active {
+      color: $text;
+      font-weight: 700;
+      // Стильна лінія знизу
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -12px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: $secondary; // Основний акцентний колір
+        border-radius: 2px;
+      }
+    }
+  }
+
+  // --- Секція Контенту (Список Послуг) ---
+  &__content {
+    display: flex;
+    justify-content: center;
+    padding: 30px 0;
+  }
+
+  &__list-column {
+    width: 100%; // Займає всю ширину контенту
+    max-width: 600px; // Обмежуємо для кращої читабельності
+    padding: 30px;
+    text-align: left;
+    background-color: lighten($default, 8%); // Трохи світліший фон, ніж секція
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); // Тінь для виділення
+  }
+
+  &__list-title {
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid $secondary; // Акцентний колір
+    color: $text;
+    text-align: center;
+  }
+
+  &__items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    // Стилізована пунктирна лінія
+    border-bottom: 1px dashed rgba($text, 0.4);
+    font-size: 18px;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--placeholder {
+      font-style: italic;
+      color: rgba($text, 0.7);
+    }
+  }
+
+  &__item-name {
+    font-weight: 400;
+    flex-grow: 1;
+  }
+
+  &__item-price {
+    font-weight: 700;
+    color: $secondary; // Ціна акцентним кольором
+    margin-left: 20px;
+  }
+
+  // Адаптивність
+  @media (max-width: 600px) {
+    &__main-title {
+      font-size: 40px;
+      margin-bottom: 30px;
+    }
+
+    &__tab {
+      font-size: 16px;
+      padding: 8px 15px;
+    }
+
+    &__list-column {
+      padding: 20px;
+    }
+
+    &__item {
+      font-size: 16px;
+    }
+  }
+}

@@ -1,0 +1,125 @@
+<script setup>
+const props = defineProps({
+  blockData: {
+    type: Array,
+    required: true,
+  },
+});
+
+const getDataValue = (dataArray, key) => {
+  const target = dataArray.find((d) => d.key === key);
+  return target ? target.value : null;
+};
+
+const getKeyValue = (key) => {
+  const block = props.blockData.find(
+    (b) => b.type === "key-value" && getDataValue(b.data, "key") === key
+  );
+  return block ? getDataValue(block.data, "value") : null;
+};
+
+const footerImageOrVideo = computed(() => {
+  const imageBlock = props.blockData.find((b) => b.type === "image");
+  return imageBlock ? getDataValue(imageBlock.data, "image") : null;
+});
+
+const googleMapsLink = computed(() => getKeyValue("google_maps"));
+const instagramLink = computed(() => getKeyValue("instagram"));
+
+const mockAddress = ref("вул. Травнева, 2а, м. Луцьк");
+const mockPhone = ref("+38 (011) 123-45-67");
+</script>
+
+<template>
+  <footer class="footer">
+    <div class="footer__container">
+      <div class="footer__col footer__col--info">
+        <h3 class="footer__title">Контакти та Адреса</h3>
+
+        <div class="footer__address-group">
+          <address class="footer__address">
+            {{ mockAddress }}
+          </address>
+          <a
+            :href="`tel:${mockPhone.replace(/\s/g, '')}`"
+            class="footer__phone"
+          >
+            {{ mockPhone }}
+          </a>
+        </div>
+
+        <div class="footer__media">
+          <template v-if="footerImageOrVideo">
+            <video
+              v-if="footerImageOrVideo.endsWith('.MOV')"
+              :src="footerImageOrVideo"
+              class="footer__video"
+              autoplay
+              loop
+              muted
+              playsinline
+            ></video>
+            <img
+              v-else
+              :src="footerImageOrVideo"
+              alt="Логотип"
+              class="footer__logo"
+            />
+          </template>
+        </div>
+      </div>
+
+      <div class="footer__col footer__col--nav">
+        <h3 class="footer__title">Навігація</h3>
+        <ul class="footer__nav-list">
+          <li class="footer__nav-item">
+            <NuxtLink to="#about" class="footer__nav-link">Про нас</NuxtLink>
+          </li>
+          <li class="footer__nav-item">
+            <NuxtLink to="#services" class="footer__nav-link">Послуги</NuxtLink>
+          </li>
+          <li class="footer__nav-item">
+            <NuxtLink to="#gallery" class="footer__nav-link"
+              >Наші роботи</NuxtLink
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer__col footer__col--social">
+        <h3 class="footer__title">Слідкуйте за нами</h3>
+
+        <div class="footer__social-links">
+          <a
+            v-if="instagramLink"
+            :href="instagramLink"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer__social-link footer__social-link--instagram"
+          >
+            Instagram
+          </a>
+        </div>
+
+        <h3 v-if="googleMapsLink" class="footer__title footer__title--map">
+          Де ми знаходимося
+        </h3>
+        <a
+          v-if="googleMapsLink"
+          :href="googleMapsLink"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="footer__map-link"
+        >
+          Переглянути на Карті
+        </a>
+      </div>
+    </div>
+
+    <div class="footer__copyright">
+      <p>
+        &copy; {{ new Date().getFullYear() }} Koral Barber. Всі права захищені.
+      </p>
+    </div>
+  </footer>
+</template>

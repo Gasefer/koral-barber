@@ -1,0 +1,17 @@
+query mainPage($slug: String!) {
+  page(input: { slug: $slug }) {
+    blocks {
+      id
+      name
+      type
+      block {
+        type
+        data {
+          key
+          type
+          value
+        }
+      }
+    }
+  }
+}

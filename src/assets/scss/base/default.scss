@@ -1,0 +1,28 @@
+$default: #402775;
+$secondary: #752749;
+$text: #fff;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: $text;
+  background-color: $default;
+  font-family: Montserrat, sans-serif;
+  &.no-scroll {
+    overflow: hidden !important;
+    position: fixed;
+    width: 100%;
+  }
+}
+
+h1 {
+  font-size: 52px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: $text;
+  margin-bottom: 60px;
+  margin-top: 0;
+}
