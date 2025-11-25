@@ -1,8 +1,9 @@
 .footer {
   padding: 60px 0 20px;
-  background-color: $third;
+  background-color: $default;
   color: $text;
   font-family: Arial, sans-serif;
+  border-top: 3px solid $third;
 
   &__container {
     max-width: 1200px;
@@ -21,17 +22,13 @@
   &__col {
     flex: 1;
     min-width: 200px;
-
-    @media (max-width: 768px) {
-      margin-bottom: 20px;
-    }
   }
 
   &__title {
     font-size: 20px;
     font-weight: 700;
     margin-bottom: 20px;
-    color: $default;
+    color: $third;
     text-transform: uppercase;
 
     @media (max-width: 768px) {
@@ -128,14 +125,14 @@
   &__social-link {
     display: inline-block;
     padding: 8px 15px;
-    border: 1px solid $default;
+    border: 1px solid $third;
     border-radius: 4px;
     color: $text;
     text-decoration: none;
     transition: background-color 0.3s, color 0.3s;
 
     &:hover {
-      background-color: $default;
+      background-color: $third;
       color: $text;
     }
   }
@@ -143,7 +140,7 @@
   &__map-link {
     display: inline-block;
     padding: 10px 20px;
-    background-color: $default;
+    border: 1px solid $third;
     border-radius: 4px;
     color: $text;
     text-decoration: none;
@@ -151,7 +148,7 @@
     transition: background-color 0.3s;
 
     &:hover {
-      background-color: lighten($default, 10%);
+      background-color: $third;
     }
   }
 
