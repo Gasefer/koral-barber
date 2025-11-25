@@ -19,7 +19,7 @@ const videoUrl = getDataValue("image", "image");
 <template>
   <section class="hero-block">
     <video
-      src="https://admin.koralbarber.com.ua/storage/blocks/01KAP1PAZ4KAY765BTP9993XD5.mp4"
+      :src="videoUrl"
       class="hero-block__video"
       autoplay
       loop
