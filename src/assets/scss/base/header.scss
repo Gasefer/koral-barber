@@ -92,24 +92,25 @@
 
   // --- Мобільне Спливаюче Меню ---
   &__list--mobile {
-    // --- ФІКС ВИЛАЗАННЯ ЗА КАДР ---
-    width: 100vw; // Ширина всього вікна
-    left: 50%; // Позиціонування від центру
-    transform: translateX(-50%); // Зсув назад на 50% власної ширини
-    box-sizing: border-box; // Гарантує, що padding не збільшує ширину
-    // -----------------------------
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-200%);
+    box-sizing: border-box;
     position: absolute;
     top: 100%;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: $default;
     z-index: 99;
     padding: 30px 20px;
+    transition: transform 0.3s ease;
+    &--active {
+      transform: translateX(-50%);
+    }
 
     @media (min-width: 901px) {
-      display: none !important;
+      display: none;
     }
 
     .header__item {
@@ -124,16 +125,21 @@
     .header__link {
       font-size: 16px;
       padding: 10px 0;
-      width: 100%;
       text-align: center;
       letter-spacing: 1.5px;
-
+      width: fit-content;
       &--button {
         padding: 12px 30px;
         margin-top: 10px;
         width: auto;
+        border: 2px solid $text;
         @media (max-width: 900px) {
           margin-top: 0;
+        }
+        &:hover {
+          background-color: $third;
+          border-color: $third;
+          color: $text;
         }
       }
 
@@ -165,19 +171,19 @@
     border-bottom: 2px solid transparent;
 
     &:hover {
-      color: lighten($text, 10%);
+      border-bottom-color: $text;
     }
 
     &--button {
       padding: 10px 20px;
-      border: 2px solid $default;
-      background-color: $default;
+      border: 2px solid $text;
+      background-color: transparent;
       border-radius: 4px;
       font-weight: 700;
 
       &:hover {
-        background-color: $secondary;
-        border-color: $text;
+        background-color: $default;
+        border-color: $default;
         color: $text;
       }
     }

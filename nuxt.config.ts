@@ -6,14 +6,19 @@ export default defineNuxtConfig({
       GQL_HOST: "https://admin.koralbarber.com.ua/graphql",
     },
   },
+  ssr: false,
   nitro: {
     preset: "vercel",
   },
   devtools: { enabled: true },
-  modules: ["@nuxt/image", "nuxt-graphql-client"],
+  modules: ["@pinia/nuxt", "@nuxt/image", "nuxt-graphql-client"],
   srcDir: "src/",
   alias: {
     "@": "src/",
+  },
+  pinia: {
+    autoImports: ["defineStore", ["defineStore", "definePiniaStore"]],
+    ssr: false,
   },
   css: ["~/assets/scss/index.scss"],
   app: {

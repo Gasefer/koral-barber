@@ -1,6 +1,4 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
-
 const props = defineProps({
   blockData: {
     type: Array,
@@ -9,13 +7,16 @@ const props = defineProps({
 });
 
 const getDataValue = (dataArray, key) => {
+  // Перевірка, що dataArray існує і є масивом
+  if (!Array.isArray(dataArray)) {
+    return null;
+  }
+
   return dataArray.find((d) => d.key === key)?.value;
 };
 
-// Стан для відстеження активної вкладки
 const activeTabTitle = ref(null);
 
-// 1. Обчислювана властивість для головного заголовка розділу
 const sectionTitle = computed(() => {
   const titleBlock = props.blockData.find((b) => b.type === "title");
   if (titleBlock) {
@@ -30,14 +31,23 @@ const serviceLists = computed(() => {
     .filter((b) => b.type === "service-list")
     .map((listBlock) => {
       const title = getDataValue(listBlock.data, "title");
-      const items = getDataValue(listBlock.data, "items");
+      const itemsBlock = listBlock.data.find((d) => d.key === "items");
+      const itemsRaw = itemsBlock?.items || [];
+
+      const items = itemsRaw.map((item) => {
+        const name = getDataValue(item.data, "name");
+        // Ми припускаємо, що price є числом або рядком, який можна парсити
+        const price = getDataValue(item.data, "price");
+        return { name: name || "Послуга", price: price || "Ціна" };
+      });
+
       return {
         title: title || "Категорія",
-        items: items || [],
+        items: items,
       };
     });
 
-  // Додаємо mock-дані для тестування, якщо немає реальних даних
+  // Додаємо mock-дані для тестування (ТЕПЕР ВОНИ ЛИШЕ ДЛЯ ВІДОБРАЖЕННЯ)
   if (!lists.length) {
     lists.push(
       {
@@ -60,17 +70,43 @@ const serviceLists = computed(() => {
   return lists;
 });
 
-// 3. Обчислювана властивість для відображення послуг активної вкладки
+// 5. >>> НОВИЙ КОД: Створення єдиного плоского масиву IService[] <<<
+const flatServicesList = computed(() => {
+  let uniqueId = 0;
+
+  // Використовуємо .reduce або .flatMap для об'єднання всіх items
+  const allServices = serviceLists.value.flatMap((category) => {
+    return category.items.map((item) => {
+      uniqueId++;
+
+      // Формуємо об'єкт IService
+      return {
+        // Унікальний ID, генеруємо на клієнті, якщо його немає у GraphQL
+        id: `srv-${uniqueId}`,
+        name: item.name,
+        // Перетворюємо ціну на число, якщо вона приходить рядком, або залишаємо 0
+        price: parseFloat(item.price) || 0,
+      };
+    });
+  });
+
+  return allServices;
+});
+
+// 6. Експортуємо список послуг, щоб його міг отримати батьківський компонент
+defineExpose({
+  flatServicesList,
+});
+// <<< КІНЕЦЬ НОВОГО КОДУ
+
 const activeServiceList = computed(() => {
   return serviceLists.value.find((list) => list.title === activeTabTitle.value);
 });
 
-// 4. Функція для зміни активної вкладки
 const setActiveTab = (title) => {
   activeTabTitle.value = title;
 };
 
-// 5. Встановлення першої вкладки активною при завантаженні
 onMounted(() => {
   if (serviceLists.value.length > 0 && !activeTabTitle.value) {
     activeTabTitle.value = serviceLists.value[0].title;
@@ -110,9 +146,7 @@ onMounted(() => {
               class="services-section__item"
             >
               <span class="services-section__item-name">{{ item.name }}</span>
-              <span class="services-section__item-price"
-                >{{ item.price }} ₴</span
-              >
+              <span class="services-section__item-price">{{ item.price }}</span>
             </li>
 
             <li

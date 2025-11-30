@@ -12,16 +12,20 @@
     display: flex;
     justify-content: space-between;
     gap: 40px;
-
-    @media (max-width: 768px) {
+    @media (max-width: 940px) {
       flex-direction: column;
       text-align: center;
     }
   }
 
   &__col {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
     min-width: 200px;
+    &--nav {
+      flex-grow: 1;
+      align-items: center;
+    }
   }
 
   &__title {
@@ -41,13 +45,11 @@
   }
 
   &__media {
-    margin-top: 20px;
-    max-width: 150px;
+    max-width: 300px;
     border-radius: 4px;
     overflow: hidden;
 
     @media (max-width: 768px) {
-      margin: 20px auto 0;
       max-width: none;
     }
   }
@@ -117,7 +119,7 @@
     gap: 15px;
     margin-bottom: 30px;
 
-    @media (max-width: 768px) {
+    @media (max-width: 940px) {
       justify-content: center;
     }
   }
@@ -151,8 +153,39 @@
       background-color: $third;
     }
   }
-
-  // --- Копірайт ---
+  &__info-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 20px;
+  }
+  &__info {
+    flex-grow: 1;
+    display: flex;
+    gap: 40px;
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+  &__content {
+    display: flex;
+    gap: 40px;
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+  &__map {
+    display: flex;
+    flex-grow: 1;
+    height: auto;
+    border-radius: 4px;
+    @media (max-width: 768px) {
+      width: 100%;
+      min-height: 250px;
+    }
+  }
   &__copyright {
     border-top: 1px solid rgba($text, 0.1);
     padding-top: 20px;

@@ -10,8 +10,23 @@ query mainPage($slug: String!) {
           key
           type
           value
+          items {
+            type
+            data {
+              key
+              value
+              type
+            }
+          }
         }
       }
     }
+  }
+}
+
+mutation createRequest($input: CreateRequestInput!) {
+  createRequest(input: $input) {
+    message
+    status
   }
 }

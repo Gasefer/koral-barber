@@ -1,15 +1,12 @@
 <script setup>
-// ref не потрібно імпортувати
 const isMobileMenuOpen = ref(false);
 
 const toggleMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
 };
 
-// Відстежуємо зміни isMobileMenuOpen
 watch(isMobileMenuOpen, (isOpen) => {
-  if (process.client) {
-    // Перевірка, щоб код виконувався лише в браузері
+  if (import.meta.client) {
     if (isOpen) {
       document.body.classList.add("no-scroll");
     } else {
@@ -18,10 +15,8 @@ watch(isMobileMenuOpen, (isOpen) => {
   }
 });
 
-// Додатково: видаляємо клас при розмонтуванні компонента,
-// хоча це Header, він зазвичай не розмонтовується.
 onUnmounted(() => {
-  if (process.client) {
+  if (import.meta.client) {
     document.body.classList.remove("no-scroll");
   }
 });
@@ -53,49 +48,41 @@ onUnmounted(() => {
       <nav class="header__nav">
         <ul class="header__list header__list--desktop">
           <li class="header__item">
-            <NuxtLink to="#about" class="header__link"> Про нас </NuxtLink>
+            <NuxtLink to="#about" class="header__link">Про нас</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#services" class="header__link"> Послуги </NuxtLink>
+            <NuxtLink to="#services" class="header__link">Послуги</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#gallery" class="header__link">
-              Наші роботи
-            </NuxtLink>
+            <NuxtLink to="#gallery" class="header__link">Наші роботи</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#contacts" class="header__link"> Контакти</NuxtLink>
+            <NuxtLink to="#contacts" class="header__link">Контакти</NuxtLink>
           </li>
           <li class="header__item">
-            <button class="header__link header__link--button">
-              Записатися
-            </button>
+            <HeaderBookingButton />
           </li>
         </ul>
 
         <ul
-          v-if="isMobileMenuOpen"
           class="header__list header__list--mobile"
+          :class="{ 'header__list--mobile--active': isMobileMenuOpen }"
           @click="toggleMenu"
         >
           <li class="header__item">
-            <NuxtLink to="#about" class="header__link"> Про нас </NuxtLink>
+            <NuxtLink to="#about" class="header__link">Про нас</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#services" class="header__link"> Послуги </NuxtLink>
+            <NuxtLink to="#services" class="header__link">Послуги</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#gallery" class="header__link">
-              Наші роботи
-            </NuxtLink>
+            <NuxtLink to="#gallery" class="header__link">Наші роботи</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#contacts" class="header__link"> Контакти</NuxtLink>
+            <NuxtLink to="#contacts" class="header__link">Контакти</NuxtLink>
           </li>
           <li class="header__item">
-            <button class="header__link header__link--button">
-              Записатися
-            </button>
+            <HeaderBookingButton />
           </li>
         </ul>
       </nav>

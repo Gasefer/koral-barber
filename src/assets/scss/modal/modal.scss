@@ -1,0 +1,317 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  overflow-y: auto;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+    padding: 0;
+  }
+}
+
+// --- 2. Модальне вікно ---
+.booking-modal {
+  background: $text;
+  padding: 40px 30px;
+  border-radius: 8px;
+  max-width: 550px;
+  width: 100%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  position: relative;
+  color: $default;
+  max-height: 70%;
+  overflow: auto;
+
+  // --- МЕДІА СТИЛІ ДЛЯ ТАБЛЕТІВ ТА МОБІЛЬНИХ (max-width: 768px) ---
+  @media (max-width: 768px) {
+    max-width: 90%;
+    max-height: 100%;
+  }
+
+  // --- МЕДІА СТИЛІ ДЛЯ МАЛИХ МОБІЛЬНИХ (max-width: 480px) ---
+  @media (max-width: 768px) {
+    max-width: 100%;
+    border-radius: 0; // Без заокруглення на повноекранному мобільному
+    height: -webkit-fill-available;
+    margin: 0; // Прибираємо можливі зовнішні відступи
+
+    &__title {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+  }
+
+  &__title {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: $secondary;
+    text-align: center;
+    font-size: 1.8rem;
+  }
+
+  &__close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: $default;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $secondary;
+    }
+
+    @media (max-width: 480px) {
+      top: 10px;
+      right: 10px;
+      font-size: 1.8rem;
+    }
+  }
+
+  // --- Секція Помилок ---
+  .error-message {
+    color: $secondary;
+    background-color: lighten($secondary, 30%);
+    border: 1px solid $secondary;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  // --- Крок 1: Список Послуг ---
+  .service-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+
+    .service-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid lighten($default, 30%);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      line-height: 1.2;
+
+      &__content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        @media (max-width: 480px) {
+          flex-direction: column;
+          align-items: flex-start;
+
+          strong {
+            margin-top: 5px;
+            font-size: 0.95rem;
+            color: $secondary;
+          }
+        }
+      }
+
+      input[type="radio"] {
+        margin-right: 15px;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid $default;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+        position: relative;
+        cursor: pointer;
+
+        &:checked {
+          border-color: $secondary;
+          background-color: $secondary;
+        }
+
+        &:checked::after {
+          content: "";
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: $text;
+        }
+      }
+
+      &:hover {
+        border-color: $third;
+        background-color: lighten($default, 45%);
+      }
+    }
+  }
+
+  // --- Крок 2: Дата та Час ---
+  .datepicker-placeholder {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      display: block;
+      width: 50%;
+      font-weight: 600;
+
+      @media (max-width: 480px) {
+        width: 100%;
+      }
+
+      input {
+        width: 100%;
+        margin-top: 5px;
+        padding: 10px;
+        border: 1px solid lighten($default, 30%);
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+    }
+  }
+
+  // --- Крок 3: Контактна Форма ---
+  .contact-form {
+    display: grid;
+    gap: 20px;
+    // Адаптуємо grid, щоб на мобільних було 1 колонка
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+    // Якщо хочете, щоб Ім'я та Телефон були поруч на десктопах,
+    // а Email окремо, використовуйте:
+    /*
+    grid-template-columns: repeat(2, 1fr);
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
+    */
+
+    label {
+      display: block;
+      font-weight: 600;
+
+      input {
+        width: 100%;
+        margin-top: 5px;
+        padding: 12px;
+        border: 1px solid lighten($default, 30%);
+        border-radius: 4px;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+
+        &:focus {
+          border-color: $secondary;
+          outline: none;
+        }
+      }
+    }
+
+    .form-actions {
+      text-align: right;
+      margin-top: 10px;
+
+      button[type="submit"] {
+        background-color: $secondary;
+        color: $text;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover:not(:disabled) {
+          background-color: $third;
+        }
+
+        &:disabled {
+          background-color: lighten($secondary, 20%);
+          cursor: not-allowed;
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
+  // --- Навігація ---
+  &__navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    gap: 10px;
+
+    .prev-btn,
+    .next-btn {
+      flex-grow: 1;
+      padding: 10px 20px;
+      border: 2px solid $default;
+      background-color: transparent;
+      color: $default;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      @media (max-width: 480px) {
+        padding: 12px 10px;
+        font-size: 0.9rem;
+      }
+
+      &:hover:not(:disabled) {
+        background-color: $default;
+        color: $text;
+      }
+
+      &:disabled {
+        border-color: lighten($default, 30%);
+        color: lighten($default, 30%);
+        cursor: not-allowed;
+      }
+    }
+
+    .next-btn[type="submit"] {
+      border: none;
+      background-color: $secondary;
+      color: $text;
+
+      &:hover:not(:disabled) {
+        background-color: $third;
+        color: $text;
+      }
+
+      // Стиль, коли кнопка submit задісейблена (повторюємо для конкретики)
+      &:disabled {
+        background-color: lighten($secondary, 20%);
+        cursor: not-allowed;
+        opacity: 0.8;
+      }
+    }
+  }
+}
