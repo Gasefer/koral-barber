@@ -41,6 +41,61 @@ const selectedServiceId = computed({
 const selectedDate = ref<string | null>(orderData.value.date);
 const selectedTime = ref<string | null>(orderData.value.time);
 
+// --- ЛОГІКА ВАЛІДАЦІЇ ДАТИ ТА ЧАСУ ---
+
+// Допоміжна функція для отримання "зараз" у локальному форматі
+const getCurrentDateTime = () => {
+  const now = new Date();
+  // YYYY-MM-DD
+  const dateStr = now
+    .toLocaleDateString("uk-UA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .split(".")
+    .reverse()
+    .join("-");
+  // HH:MM
+  const timeStr = now.toLocaleTimeString("uk-UA", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return { dateStr, timeStr };
+};
+
+// Обмежуємо вибір у календарі (min attribute)
+const minDate = computed(() => getCurrentDateTime().dateStr);
+
+const validateDate = () => {
+  if (!selectedDate.value) return;
+
+  const { dateStr: today } = getCurrentDateTime();
+
+  // Якщо обрана дата менша за сьогоднішню — ставимо сьогоднішню
+  if (selectedDate.value < today) {
+    selectedDate.value = today;
+    // Одразу перевіряємо час, бо якщо дата змінилась на сьогодні, час може бути вже минулим
+    validateTime();
+  }
+};
+
+const validateTime = () => {
+  if (!selectedTime.value || !selectedDate.value) return;
+
+  const { dateStr: today, timeStr: nowTime } = getCurrentDateTime();
+
+  // Перевіряємо час ТІЛЬКИ якщо обрана дата — це сьогодні
+  if (selectedDate.value === today) {
+    if (selectedTime.value < nowTime) {
+      selectedTime.value = nowTime;
+    }
+  }
+};
+
+// --- КІНЕЦЬ ЛОГІКИ ВАЛІДАЦІЇ ---
+
 watch([selectedDate, selectedTime], ([newDate, newTime]) => {
   setDateAndTime(newDate, newTime);
 });
@@ -100,7 +155,6 @@ const handleSubmit = async () => {
 
     const response = await GqlCreateRequest({ input });
 
-    // Перевірка помилок
     const result = response?.createRequest;
 
     if (result && result.status === "success") {
@@ -162,11 +216,22 @@ const handleSubmit = async () => {
           <div class="datepicker-placeholder">
             <label>
               Дата
-              <input type="date" v-model="selectedDate" required />
+              <input
+                type="date"
+                v-model="selectedDate"
+                :min="minDate"
+                @blur="validateDate"
+                required
+              />
             </label>
             <label>
               Час
-              <input type="time" v-model="selectedTime" required />
+              <input
+                type="time"
+                v-model="selectedTime"
+                @blur="validateTime"
+                required
+              />
             </label>
           </div>
           <p v-if="currentStep === 2 && !isStepComplete" class="error-message">
