@@ -43,7 +43,7 @@ const selectedTime = ref<string | null>(orderData.value.time);
 
 // --- ЛОГІКА ВАЛІДАЦІЇ ДАТИ ТА ЧАСУ ---
 
-// Допоміжна функція для отримання "зараз" у локальному форматі
+// Допоміжна функція для отримання "зараз" у локальному форматі (YYYY-MM-DD та HH:MM)
 const getCurrentDateTime = () => {
   const now = new Date();
   // YYYY-MM-DD
@@ -56,14 +56,26 @@ const getCurrentDateTime = () => {
     .split(".")
     .reverse()
     .join("-");
-  // HH:MM
+  // HH:MM (Force 24-hour format)
   const timeStr = now.toLocaleTimeString("uk-UA", {
     hour: "2-digit",
     minute: "2-digit",
+    hourCycle: "h23",
   });
 
   return { dateStr, timeStr };
 };
+
+// Генеруємо доступні часові слоти з інтервалом 30 хвилин
+const availableTimeSlots = computed(() => {
+  const slots: string[] = [];
+  for (let h = 0; h < 24; h++) {
+    for (const m of ["00", "30"]) {
+      slots.push(`${String(h).padStart(2, "0")}:${m}`);
+    }
+  }
+  return slots;
+});
 
 // Обмежуємо вибір у календарі (min attribute)
 const minDate = computed(() => getCurrentDateTime().dateStr);
@@ -76,7 +88,7 @@ const validateDate = () => {
   // Якщо обрана дата менша за сьогоднішню — ставимо сьогоднішню
   if (selectedDate.value < today) {
     selectedDate.value = today;
-    // Одразу перевіряємо час, бо якщо дата змінилась на сьогодні, час може бути вже минулим
+    // Одразу перевіряємо час
     validateTime();
   }
 };
@@ -84,15 +96,37 @@ const validateDate = () => {
 const validateTime = () => {
   if (!selectedTime.value || !selectedDate.value) return;
 
-  const { dateStr: today, timeStr: nowTime } = getCurrentDateTime();
+  const { dateStr: today, timeStr: nowTimeStr } = getCurrentDateTime();
 
   // Перевіряємо час ТІЛЬКИ якщо обрана дата — це сьогодні
   if (selectedDate.value === today) {
-    if (selectedTime.value < nowTime) {
-      selectedTime.value = nowTime;
+    // Якщо обраний час менший за поточний
+    if (selectedTime.value < nowTimeStr) {
+      let slotToSet: string | null = null;
+
+      // Знаходимо найближчий наступний слот (00 або 30) після поточного часу
+      for (const slot of availableTimeSlots.value) {
+        if (slot > nowTimeStr) {
+          slotToSet = slot;
+          break;
+        }
+      }
+
+      // Встановлюємо найближчий слот, або 00:00 (якщо зараз > 23:30)
+      selectedTime.value = slotToSet || availableTimeSlots.value[0];
     }
   }
 };
+
+// Ініціалізація часу, якщо він не встановлений (щоб уникнути пустого селекта)
+if (!selectedTime.value && availableTimeSlots.value.length > 0) {
+  // Встановлюємо сьогоднішню дату і викликаємо валідацію, щоб отримати найближчий час
+  selectedDate.value = minDate.value;
+  validateTime();
+  if (!selectedTime.value) {
+    selectedTime.value = availableTimeSlots.value[0];
+  }
+}
 
 // --- КІНЕЦЬ ЛОГІКИ ВАЛІДАЦІЇ ---
 
@@ -226,12 +260,16 @@ const handleSubmit = async () => {
             </label>
             <label>
               Час
-              <input
-                type="time"
-                v-model="selectedTime"
-                @blur="validateTime"
-                required
-              />
+              <select v-model="selectedTime" @change="validateTime" required>
+                <option :value="null" disabled>Оберіть час</option>
+                <option
+                  v-for="time in availableTimeSlots"
+                  :key="time"
+                  :value="time"
+                >
+                  {{ time }}
+                </option>
+              </select>
             </label>
           </div>
           <p v-if="currentStep === 2 && !isStepComplete" class="error-message">
