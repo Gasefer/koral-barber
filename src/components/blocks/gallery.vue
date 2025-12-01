@@ -9,34 +9,27 @@ const props = defineProps({
 const galleryItems = computed(() => {
   if (!props.blockData.length) return [];
 
+  // 1. Знаходимо блок типу "image-list"
   const imageListBlock = props.blockData.find((b) => b.type === "image-list");
   if (!imageListBlock || !imageListBlock.data) return [];
+
+  // 2. Знаходимо елемент з ключем "image-item"
   const imageItems = imageListBlock.data.find((d) => d.key === "image-item");
+  if (!imageItems || !imageItems.items) return [];
 
-  const baseItems = [
-    {
-      id: 1,
-      url: "https://ezebra.iai-shop.com/data/include/cms/BLOG-UA/krasivye-wolosy-7-sovetov/2.jpg",
-    },
-    {
-      id: 2,
-      url: "https://ezebra.iai-shop.com/data/include/cms/BLOG-UA/krasivye-wolosy-7-sovetov/2.jpg",
-    },
-    {
-      id: 3,
-      url: "https://ezebra.iai-shop.com/data/include/cms/BLOG-UA/krasivye-wolosy-7-sovetov/2.jpg",
-    },
-    {
-      id: 4,
-      url: "https://ezebra.iai-shop.com/data/include/cms/BLOG-UA/krasivye-wolosy-7-sovetov/2.jpg",
-    },
-    {
-      id: 5,
-      url: "https://ezebra.iai-shop.com/data/include/cms/BLOG-UA/krasivye-wolosy-7-sovetov/2.jpg",
-    },
-  ];
+  // 3. Перетворюємо масив "items" у потрібний нам формат { id, url }
+  return imageItems.items
+    .map((item, index) => {
+      // Знаходимо об'єкт з ключем "image" всередині даних
+      const imageData = item.data.find((d) => d.key === "image");
 
-  return baseItems;
+      // Повертаємо об'єкт з id та url зображення (з "value")
+      return {
+        id: `gallery-item-${index + 1}`, // Унікальний id
+        url: imageData?.value,
+      };
+    })
+    .filter((item) => item.url); // Фільтруємо на випадок відсутності url
 });
 </script>
 
