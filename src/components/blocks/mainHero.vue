@@ -6,8 +6,11 @@ const props = defineProps({
   },
 });
 
+console.log();
+
 const getDataValue = (type, key) => {
   const blockType = props.blockData.find((b) => b.type === type);
+
   return blockType?.data.find((d) => d.key === key)?.value;
 };
 

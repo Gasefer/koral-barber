@@ -1,5 +1,29 @@
 query mainPage($slug: String!) {
   page(input: { slug: $slug }) {
+    benefits_description
+    benefits_title
+    color
+    content
+    description
+    id
+    meta_description
+    meta_title
+    seo_description
+    seo_title
+    slug
+    title
+    faqs {
+      question
+      image
+      answer
+    }
+    feedbacks {
+      created_at
+      first_name
+      image
+      message
+      phone
+    }
     blocks {
       id
       name
@@ -20,6 +44,22 @@ query mainPage($slug: String!) {
           }
         }
       }
+    }
+  }
+  settings {
+    dates {
+      date
+      times {
+        time
+        reserved_at
+      }
+    }
+    settings {
+      is_new_window
+      key
+      name
+      to_front
+      value
     }
   }
 }

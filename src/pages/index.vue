@@ -4,11 +4,48 @@ import type { IService } from "~/stores/useBookingStore";
 
 const pageSlug = "main";
 
+interface ITimeSlot {
+  time: string;
+  reserved_at: string | null;
+}
+
+interface IDateSlot {
+  date: string;
+  times: ITimeSlot[];
+}
+
+interface ISettings {
+  dates: IDateSlot[];
+  settings: unknown[];
+}
+
+interface IGqlMainPageResponse {
+  page?: {
+    blocks: {
+      id: string;
+      name: string | null;
+      type: string | null;
+      block: {
+        data: {
+          key: string;
+          type: string;
+          value: unknown;
+        }[];
+      }[];
+    }[];
+  };
+  settings?: ISettings;
+}
+
 const { data: response } = await useAsyncData("mainPageData", () =>
   GqlMainPage({ slug: pageSlug })
 );
 
-const allBlocks = computed(() => response.value?.page?.blocks || []);
+const typedResponse = computed(
+  () => response.value as IGqlMainPageResponse | null
+);
+
+const allBlocks = computed(() => typedResponse.value?.page?.blocks || []);
 
 const getBlockData = (name: string) => {
   const targetName = name.toLowerCase();
@@ -24,26 +61,18 @@ const aboutData = computed(() => getBlockData("про нас"));
 const galleryData = computed(() => getBlockData("галерея"));
 const contactData = computed(() => getBlockData("контакти"));
 
-// 1. >>> НОВИЙ КОД: Створення Ref для доступу до компонента <<<
+const availableBookingDates = computed<IDateSlot[]>(
+  () => typedResponse.value?.settings?.dates || []
+);
+
 const servicesBlockRef = ref(null);
 
-// 2. Обчислювана властивість для отримання реальних послуг з компонента
 const actualServices = computed<IService[]>(() => {
-  // Перевіряємо, чи компонент завантажився і чи експортував він flatServicesList
   if (servicesBlockRef.value && servicesBlockRef.value.flatServicesList) {
     return servicesBlockRef.value.flatServicesList;
   }
-  // Повертаємо порожній масив за замовчуванням
   return [];
 });
-// <<< КІНЕЦЬ НОВОГО КОДУ
-
-// !!! ВИДАЛЯЄМО ЗАХАРДКОДЖЕНІ ПОСЛУГИ !!!
-// const mockServices: IService[] = [
-//  { id: "1", name: "Чоловіча стрижка", price: 400 },
-//  { id: "2", name: "Стрижка + Борода", price: 650 },
-//  { id: "3", name: "Дитяча стрижка", price: 300 },
-// ];
 </script>
 
 <template>
@@ -62,7 +91,10 @@ const actualServices = computed<IService[]>(() => {
     <BaseFooter v-if="contactData.length" :block-data="contactData" />
 
     <ClientOnly>
-      <ModalTheBookingModal :services="actualServices" />
+      <ModalTheBookingModal
+        :services="actualServices"
+        :dates="availableBookingDates"
+      />
     </ClientOnly>
   </div>
 </template>

@@ -6,10 +6,23 @@ import {
 } from "~/stores/useBookingStore";
 import { storeToRefs } from "pinia";
 
+interface TimeSlot {
+  time: string;
+  reserved_at: string | null;
+}
+
+interface DateSlot {
+  date: string;
+  times: TimeSlot[];
+}
+
 interface Props {
   services: IService[];
+  dates: DateSlot[]; // Використовуємо новий інтерфейс
 }
 const props = defineProps<Props>();
+
+// console.log(props.dates); // Прибираємо лог
 
 const bookingStore = useBookingStore();
 const {
@@ -41,94 +54,73 @@ const selectedServiceId = computed({
 const selectedDate = ref<string | null>(orderData.value.date);
 const selectedTime = ref<string | null>(orderData.value.time);
 
-// --- ЛОГІКА ВАЛІДАЦІЇ ДАТИ ТА ЧАСУ ---
+// --- НОВА ЛОГІКА ДАТИ ТА ЧАСУ ---
 
-// Допоміжна функція для отримання "зараз" у локальному форматі (YYYY-MM-DD та HH:MM)
-const getCurrentDateTime = () => {
-  const now = new Date();
-  // YYYY-MM-DD
-  const dateStr = now
-    .toLocaleDateString("uk-UA", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    })
-    .split(".")
-    .reverse()
-    .join("-");
-  // HH:MM (Force 24-hour format)
-  const timeStr = now.toLocaleTimeString("uk-UA", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  });
+/**
+ * Форматує дату (YYYY-MM-DD) у рядок з днем тижня (напр., "ПН, 08 Груд")
+ * @param dateString - Дата у форматі YYYY-MM-DD
+ */
+const formatDayAndDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  // Перевірка на валідність дати, хоча вона має бути валідна, оскільки приходить з бекенду
+  if (isNaN(date.getTime())) {
+    return dateString;
+  }
 
-  return { dateStr, timeStr };
+  // Використовуємо "uk-UA" для отримання української назви дня тижня та місяця
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "short", // Пн, Вт, Ср, ...
+    day: "2-digit", // 08
+    month: "short", // Гру
+  };
+
+  const formatted = date.toLocaleDateString("uk-UA", options);
+
+  // Приведення першої літери дня тижня до верхнього регістру,
+  // і заміна 'гр.' на 'гру.' для кращого вигляду
+  return (
+    formatted.charAt(0).toUpperCase() + formatted.slice(1).replace(".", "")
+  );
 };
 
-// Генеруємо доступні часові слоти з інтервалом 30 хвилин
-const availableTimeSlots = computed(() => {
-  const slots: string[] = [];
-  for (let h = 0; h < 24; h++) {
-    for (const m of ["00", "30"]) {
-      slots.push(`${String(h).padStart(2, "0")}:${m}`);
-    }
+/**
+ * Обчислюваний список часових слотів для обраної дати.
+ */
+const selectedDateSlots = computed<TimeSlot[]>(() => {
+  if (!selectedDate.value) {
+    return [];
   }
-  return slots;
+  const dateSlot = props.dates.find((d) => d.date === selectedDate.value);
+  return dateSlot ? dateSlot.times : [];
 });
 
-// Обмежуємо вибір у календарі (min attribute)
-const minDate = computed(() => getCurrentDateTime().dateStr);
-
-const validateDate = () => {
-  if (!selectedDate.value) return;
-
-  const { dateStr: today } = getCurrentDateTime();
-
-  // Якщо обрана дата менша за сьогоднішню — ставимо сьогоднішню
-  if (selectedDate.value < today) {
-    selectedDate.value = today;
-    // Одразу перевіряємо час
-    validateTime();
-  }
-};
-
-const validateTime = () => {
-  if (!selectedTime.value || !selectedDate.value) return;
-
-  const { dateStr: today, timeStr: nowTimeStr } = getCurrentDateTime();
-
-  // Перевіряємо час ТІЛЬКИ якщо обрана дата — це сьогодні
-  if (selectedDate.value === today) {
-    // Якщо обраний час менший за поточний
-    if (selectedTime.value < nowTimeStr) {
-      let slotToSet: string | null = null;
-
-      // Знаходимо найближчий наступний слот (00 або 30) після поточного часу
-      for (const slot of availableTimeSlots.value) {
-        if (slot > nowTimeStr) {
-          slotToSet = slot;
-          break;
-        }
-      }
-
-      // Встановлюємо найближчий слот, або 00:00 (якщо зараз > 23:30)
-      selectedTime.value = slotToSet || availableTimeSlots.value[0];
-    }
-  }
-};
-
-// Ініціалізація часу, якщо він не встановлений (щоб уникнути пустого селекта)
-if (!selectedTime.value && availableTimeSlots.value.length > 0) {
-  // Встановлюємо сьогоднішню дату і викликаємо валідацію, щоб отримати найближчий час
-  selectedDate.value = minDate.value;
-  validateTime();
-  if (!selectedTime.value) {
-    selectedTime.value = availableTimeSlots.value[0];
-  }
+// Автоматично обираємо перший день, якщо дата ще не обрана.
+// Виконується тільки на початку.
+if (!selectedDate.value && props.dates.length > 0) {
+  selectedDate.value = props.dates[0].date;
 }
 
-// --- КІНЕЦЬ ЛОГІКИ ВАЛІДАЦІЇ ---
+// Перевіряємо, чи обраний час валідний для нової дати.
+watch(selectedDate, (newDate) => {
+  // Якщо обрано нову дату, але раніше обраний час недоступний або зайнятий, скидаємо час.
+  if (newDate) {
+    const currentSlots =
+      props.dates.find((d) => d.date === newDate)?.times || [];
+
+    const isTimeStillAvailable = currentSlots.some(
+      (slot) => slot.time === selectedTime.value && slot.reserved_at === null
+    );
+
+    if (!isTimeStillAvailable) {
+      selectedTime.value = null; // Скидаємо, якщо час зайнятий або недоступний
+    }
+  }
+});
+
+// --- КІНЕЦЬ НОВОЇ ЛОГІКИ ДАТИ ТА ЧАСУ ---
+
+// Видалено: minDate, validateDate, validateTime, availableTimeSlots
+// Збережено: watch для setDateAndTime та логіка контакту й сабміту
 
 watch([selectedDate, selectedTime], ([newDate, newTime]) => {
   setDateAndTime(newDate, newTime);
@@ -248,30 +240,47 @@ const handleSubmit = async () => {
         <div v-show="currentStep === 2" class="booking-modal__step step-2">
           <h3>Оберіть дату та час</h3>
           <div class="datepicker-placeholder">
-            <label>
-              Дата
-              <input
-                type="date"
-                v-model="selectedDate"
-                :min="minDate"
-                @blur="validateDate"
-                required
-              />
-            </label>
-            <label>
-              Час
-              <select v-model="selectedTime" @change="validateTime" required>
-                <option :value="null" disabled>Оберіть час</option>
-                <option
-                  v-for="time in availableTimeSlots"
-                  :key="time"
-                  :value="time"
-                >
-                  {{ time }}
-                </option>
-              </select>
-            </label>
+            <div class="time-selector">
+              <label>
+                Дата
+                <select v-model="selectedDate" required>
+                  <option :value="null" disabled>Оберіть дату</option>
+                  <option
+                    v-for="dateSlot in props.dates"
+                    :key="dateSlot.date"
+                    :value="dateSlot.date"
+                  >
+                    {{ formatDayAndDate(dateSlot.date) }}
+                  </option>
+                </select>
+              </label>
+            </div>
+
+            <div class="time-selector" v-if="selectedDate">
+              <label>
+                Час
+                <select v-model="selectedTime" required>
+                  <option :value="null" disabled>Оберіть час</option>
+                  <option
+                    v-for="timeSlot in selectedDateSlots"
+                    :key="timeSlot.time"
+                    :value="timeSlot.time"
+                    :disabled="!!timeSlot.reserved_at"
+                    :class="{ 'is-reserved': !!timeSlot.reserved_at }"
+                  >
+                    {{ timeSlot.time }}
+                    <span v-if="!!timeSlot.reserved_at" style="color: grey"
+                      >(Зайнято)</span
+                    >
+                  </option>
+                </select>
+              </label>
+            </div>
           </div>
+          <p v-if="!selectedDate" style="margin-top: 10px; color: #555">
+            Оберіть дату, щоб побачити доступний час.
+          </p>
+
           <p v-if="currentStep === 2 && !isStepComplete" class="error-message">
             Оберіть дату та час для запису.
           </p>
@@ -290,7 +299,7 @@ const handleSubmit = async () => {
               <input type="tel" v-model="contactForm.phone" required />
             </label>
             <label>
-              Email <span style="color: red">*</span>
+              Email
               <input type="email" v-model="contactForm.email" />
             </label>
           </div>
