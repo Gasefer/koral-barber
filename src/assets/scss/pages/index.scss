@@ -1,0 +1,23 @@
+.fixed-btn {
+  width: 100px;
+  height: 100px;
+  background-color: $third;
+  color: $text;
+  font-size: 13px;
+  border-radius: 50%;
+  position: fixed;
+  bottom: 20px;
+  border: 0;
+  right: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+  text-transform: uppercase;
+  padding: 15px;
+  transition: scale 0.3s ease;
+  &:hover {
+    scale: 1.05;
+  }
+}

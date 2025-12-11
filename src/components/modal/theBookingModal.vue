@@ -54,12 +54,6 @@ const selectedServiceId = computed({
 const selectedDate = ref<string | null>(orderData.value.date);
 const selectedTime = ref<string | null>(orderData.value.time);
 
-// --- НОВА ЛОГІКА ДАТИ ТА ЧАСУ ---
-
-/**
- * Форматує дату (YYYY-MM-DD) у рядок з днем тижня (напр., "ПН, 08 Груд")
- * @param dateString - Дата у форматі YYYY-MM-DD
- */
 const formatDayAndDate = (dateString: string): string => {
   const date = new Date(dateString);
   // Перевірка на валідність дати, хоча вона має бути валідна, оскільки приходить з бекенду
@@ -231,7 +225,7 @@ const handleSubmit = async () => {
                 class="service-item__content"
               >
                 <span>{{ service.name }}</span>
-                <strong>{{ service.price }} грн</strong>
+                <strong v-if="service?.price">{{ service.price }} грн</strong>
               </label>
             </li>
           </ul>

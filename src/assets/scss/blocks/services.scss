@@ -106,9 +106,22 @@
     display: flex;
     justify-content: space-between;
     padding: 12px 0;
-    // Стилізована пунктирна лінія
-    border-bottom: 1px dashed rgba($text, 0.4);
     font-size: 18px;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: rgba($text, 0.7);
+    transition: color 0.3s ease, scale 0.3s ease;
+
+    &:hover {
+      color: $text;
+      scale: 1.01 1;
+    }
+    &-wrapper {
+      width: 100%;
+      border-bottom: 1px dashed rgba($text, 0.4);
+    }
 
     &:last-child {
       border-bottom: none;
@@ -123,11 +136,13 @@
   &__item-name {
     font-weight: 400;
     flex-grow: 1;
+    text-align: start;
+    color: inherit;
   }
 
   &__item-price {
     font-weight: 700;
-    color: $text; // Ціна акцентним кольором
+    color: inherit; // Ціна акцентним кольором
     margin-left: 20px;
   }
 

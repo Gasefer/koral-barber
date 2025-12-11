@@ -38,7 +38,7 @@ const serviceLists = computed(() => {
         const name = getDataValue(item.data, "name");
         // Ми припускаємо, що price є числом або рядком, який можна парсити
         const price = getDataValue(item.data, "price");
-        return { name: name || "Послуга", price: price || "Ціна" };
+        return { name: name || "Послуга", price: price || 0 };
       });
 
       return {
@@ -143,10 +143,16 @@ onMounted(() => {
             <li
               v-for="(item, itemIndex) in activeServiceList.items"
               :key="itemIndex"
-              class="services-section__item"
+              class="services-section__item-wrapper"
             >
-              <span class="services-section__item-name">{{ item.name }}</span>
-              <span class="services-section__item-price">{{ item.price }}</span>
+              <button class="services-section__item">
+                <span class="services-section__item-name">{{ item.name }}</span>
+                <span
+                  v-if="item?.price !== 0 && item?.price"
+                  class="services-section__item-price"
+                  >{{ item.price }}</span
+                >
+              </button>
             </li>
 
             <li
