@@ -1,10 +1,23 @@
 <script setup>
+import { useBookingStore } from "~/stores/useBookingStore";
 const props = defineProps({
   blockData: {
     type: Array,
     required: true,
   },
 });
+
+const bookingStore = useBookingStore();
+
+const handleServiceClick = (name) => {
+  const serviceToBook = flatServicesList.value.find((s) => s.name === name);
+
+  if (serviceToBook) {
+    bookingStore.setService(serviceToBook);
+    bookingStore.openModal();
+    bookingStore.nextStep();
+  }
+};
 
 const getDataValue = (dataArray, key) => {
   // Перевірка, що dataArray існує і є масивом
@@ -145,7 +158,10 @@ onMounted(() => {
               :key="itemIndex"
               class="services-section__item-wrapper"
             >
-              <button class="services-section__item">
+              <button
+                class="services-section__item"
+                @click="handleServiceClick(item.name)"
+              >
                 <span class="services-section__item-name">{{ item.name }}</span>
                 <span
                   v-if="item?.price !== 0 && item?.price"

@@ -22,9 +22,8 @@ interface Props {
 }
 const props = defineProps<Props>();
 
-// console.log(props.dates); // Прибираємо лог
-
 const bookingStore = useBookingStore();
+
 const {
   isModalOpen,
   orderData,
@@ -88,6 +87,17 @@ const selectedDateSlots = computed<TimeSlot[]>(() => {
   return dateSlot ? dateSlot.times : [];
 });
 
+const selectServiceAndNext = (id: string) => {
+  // Встановлюємо послугу через setter, який вже викликає setService(service)
+  selectedServiceId.value = id;
+
+  // Оскільки setService() був викликаний, isStepComplete тепер true,
+  // і ми можемо перейти на наступний крок.
+  if (bookingStore.isStepComplete) {
+    nextStep();
+  }
+};
+
 // Автоматично обираємо перший день, якщо дата ще не обрана.
 // Виконується тільки на початку.
 if (!selectedDate.value && props.dates.length > 0) {
@@ -126,10 +136,6 @@ const contactForm = reactive<Pick<IOrderData, "name" | "phone" | "email">>({
   email: orderData.value.email,
 });
 
-const isContactFormValid = computed(() => {
-  return contactForm.name.trim() !== "" && contactForm.phone.trim() !== "";
-});
-
 watch(
   contactForm,
   (newForm) => {
@@ -137,12 +143,6 @@ watch(
   },
   { deep: true }
 );
-
-const handleNextStep = () => {
-  if (isStepComplete.value) {
-    nextStep();
-  }
-};
 
 const handleSubmit = async () => {
   if (!isStepComplete.value) return;
@@ -212,7 +212,7 @@ const handleSubmit = async () => {
               v-for="service in props.services"
               :key="service.id"
               class="service-item"
-              @click="selectedServiceId = service.id"
+              @click="selectServiceAndNext(service.id)"
             >
               <input
                 type="radio"
@@ -313,11 +313,11 @@ const handleSubmit = async () => {
 
           <div v-else></div>
           <button
-            v-if="currentStep < 3"
+            v-if="currentStep > 1 && currentStep < 3"
             type="button"
             class="next-btn"
             :disabled="!isStepComplete"
-            @click="handleNextStep"
+            @click="nextStep"
           >
             Далі
           </button>

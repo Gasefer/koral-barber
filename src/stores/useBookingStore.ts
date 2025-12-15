@@ -104,6 +104,10 @@ export const useBookingStore = defineStore("bookingStore", () => {
 
   function prevStep() {
     if (currentStep.value > 1) {
+      if (currentStep.value === 2) {
+        orderData.date = null;
+        orderData.time = null;
+      }
       currentStep.value = (currentStep.value - 1) as 1 | 2 | 3;
     }
   }

@@ -80,6 +80,10 @@
       font-size: 1.8rem;
     }
   }
+  &__form {
+    display: flex;
+    flex-direction: column;
+  }
 
   // --- Секція Помилок ---
   .error-message {
