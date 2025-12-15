@@ -19,7 +19,8 @@ const description = getDataValue("description", "description");
   <section id="about" class="about-us">
     <div class="container about-us__container">
       <h1 class="services-section__main-title">{{ title }}</h1>
-      <p class="about-us__description">{{ description }}</p>
+
+      <div class="about-us__description" v-html="description"></div>
     </div>
   </section>
 </template>
