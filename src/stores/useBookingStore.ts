@@ -15,6 +15,7 @@ export interface IOrderData {
   name: string;
   phone: string;
   email: string;
+  message: string;
 }
 
 const DUMMY_SERVICES: IService[] = [
@@ -35,6 +36,7 @@ export const useBookingStore = defineStore("bookingStore", () => {
     name: "",
     phone: "",
     email: "",
+    message: "",
   });
 
   const services = ref<IService[]>(DUMMY_SERVICES);
@@ -89,6 +91,7 @@ export const useBookingStore = defineStore("bookingStore", () => {
     orderData.name = "";
     orderData.phone = "";
     orderData.email = "";
+    orderData.message = "";
     error.value = null; // Скидаємо помилку при закритті
 
     if (import.meta.client) {
@@ -125,10 +128,12 @@ export const useBookingStore = defineStore("bookingStore", () => {
     name: string;
     phone: string;
     email: string;
+    message: string;
   }) {
     orderData.name = info.name;
     orderData.phone = info.phone;
     orderData.email = info.email;
+    orderData.message = info.message;
   }
 
   return {

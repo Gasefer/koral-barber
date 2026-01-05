@@ -54,7 +54,7 @@ onUnmounted(() => {
             <NuxtLink to="#services" class="header__link">Послуги</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#gallery" class="header__link">Наші роботи</NuxtLink>
+            <NuxtLink to="#gallery" class="header__link">Галерея</NuxtLink>
           </li>
           <li class="header__item">
             <NuxtLink to="#contacts" class="header__link">Контакти</NuxtLink>
@@ -76,7 +76,7 @@ onUnmounted(() => {
             <NuxtLink to="#services" class="header__link">Послуги</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#gallery" class="header__link">Наші роботи</NuxtLink>
+            <NuxtLink to="#gallery" class="header__link">Галерея</NuxtLink>
           </li>
           <li class="header__item">
             <NuxtLink to="#contacts" class="header__link">Контакти</NuxtLink>

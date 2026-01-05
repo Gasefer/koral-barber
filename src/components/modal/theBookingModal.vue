@@ -130,10 +130,13 @@ watch([selectedDate, selectedTime], ([newDate, newTime]) => {
   setDateAndTime(newDate, newTime);
 });
 
-const contactForm = reactive<Pick<IOrderData, "name" | "phone" | "email">>({
+const contactForm = reactive<
+  Pick<IOrderData, "name" | "phone" | "email" | "message">
+>({
   name: orderData.value.name,
   phone: orderData.value.phone,
   email: orderData.value.email,
+  message: orderData.value.message,
 });
 
 watch(
@@ -145,14 +148,22 @@ watch(
 );
 
 const handleSubmit = async () => {
+  // Додаємо перевірку полів контактної форми перед сабмітом
+  const { name, phone, email, message } = orderData.value;
+
   if (!isStepComplete.value) return;
 
   if (
     !orderData.value.service ||
     !orderData.value.date ||
-    !orderData.value.time
+    !orderData.value.time ||
+    !name ||
+    !phone ||
+    !email ||
+    !message // Перевірка повідомлення
   ) {
-    bookingStore.error = "Помилка: Не всі дані для запису заповнені.";
+    bookingStore.error =
+      "Помилка: Заповніть усі обов'язкові поля, включаючи коментар.";
     return;
   }
 
@@ -162,33 +173,24 @@ const handleSubmit = async () => {
   try {
     const input = {
       reserved_at: `${orderData.value.date} ${orderData.value.time}`,
-      name: orderData.value.name,
-      phone: orderData.value.phone,
+      name,
+      phone,
       email: orderData.value.email || "",
-      servises:
-        orderData.value.service.name +
-        " " +
-        orderData.value.service.price +
-        " грн",
-      message: "Запис через форму бронювання.",
+      message,
+      servises: `${orderData.value.service.name} ${orderData.value.service.price} грн`,
     };
 
     const response = await GqlCreateRequest({ input });
-
     const result = response?.createRequest;
 
     if (result && result.status === "success") {
       alert("Ваш запис успішно прийнято!✅");
       closeModal();
     } else {
-      bookingStore.error =
-        result?.message || "Невідома помилка сервера при записі.";
+      bookingStore.error = result?.message || "Невідома помилка сервера.";
     }
   } catch (err: any) {
-    console.error("Помилка при відправці замовлення:", err);
-    bookingStore.error =
-      err.message ||
-      "Помилка зв'язку. Перевірте з'єднання або спробуйте пізніше.";
+    bookingStore.error = err.message || "Помилка зв'язку.";
   } finally {
     bookingStore.isLoading = false;
   }
@@ -293,8 +295,18 @@ const handleSubmit = async () => {
               <input type="tel" v-model="contactForm.phone" required />
             </label>
             <label>
-              Email
-              <input type="email" v-model="contactForm.email" />
+              Email <span style="color: red">*</span>
+              <input type="email" required v-model="contactForm.email" />
+            </label>
+            <label>
+              Коментар <span style="color: red">*</span>
+              <textarea
+                class="booking-modal__textarea"
+                type="message"
+                required
+                v-model="contactForm.message"
+                placeholder="Введіть ваше повідомлення"
+              />
             </label>
           </div>
         </div>

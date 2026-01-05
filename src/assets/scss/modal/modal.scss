@@ -352,6 +352,21 @@
       }
     }
   }
+  &__textarea {
+    width: 100%;
+    margin-top: 5px;
+    padding: 12px;
+    height: 100px;
+    border: 1px solid lighten($default, 30%);
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: $secondary;
+      outline: none;
+    }
+  }
 }
 .is-reserved {
   color: grey;

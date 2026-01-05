@@ -134,7 +134,7 @@ const socialMediaLinks = computed(() => {
               </li>
               <li class="footer__nav-item">
                 <NuxtLink to="#gallery" class="footer__nav-link"
-                  >Наші роботи</NuxtLink
+                  >Галерея</NuxtLink
                 >
               </li>
             </ul>
