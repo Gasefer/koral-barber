@@ -60,6 +60,7 @@ const heroData = computed(() => getBlockData("головний блок"));
 const aboutData = computed(() => getBlockData("про нас"));
 const galleryData = computed(() => getBlockData("галерея"));
 const contactData = computed(() => getBlockData("контакти"));
+const tipsData = computed(() => getBlockData("поради"));
 
 const availableBookingDates = computed<IDateSlot[]>(
   () => typedResponse.value?.settings?.dates || []
@@ -86,7 +87,10 @@ const actualServices = computed<IService[]>(() => {
       :block-data="servicesData"
       ref="servicesBlockRef"
     />
+
     <BlocksGallery v-if="galleryData.length" :block-data="galleryData" />
+
+    <BlocksTips v-if="tipsData.length" :block-data="tipsData" />
 
     <BaseFooter v-if="contactData.length" :block-data="contactData" />
 

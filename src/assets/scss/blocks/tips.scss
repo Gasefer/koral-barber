@@ -1,0 +1,110 @@
+.tips {
+  padding: 60px 0;
+  background-color: $default;
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  &__title {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+    color: $text;
+    text-transform: uppercase;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  &__item {
+    background-color: $secondary;
+    border: 1px solid $third;
+    border-radius: 8px;
+    overflow: hidden;
+
+    &--open {
+      .tips__icon {
+        transform: rotate(45deg);
+      }
+
+      .tips__answer-collapse {
+        grid-template-rows: 1fr;
+      }
+    }
+  }
+
+  &__question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    color: $text;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &__icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      background-color: $text;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &::before {
+      width: 100%;
+      height: 2px;
+    }
+
+    &::after {
+      width: 2px;
+      height: 100%;
+    }
+  }
+
+  // Логіка плавного колапсу через CSS Grid
+  &__answer-collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-out;
+  }
+
+  &__answer-content {
+    overflow: hidden;
+  }
+
+  &__answer {
+    padding: 0 20px 20px 20px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: $text;
+    opacity: 0.9;
+  }
+}
