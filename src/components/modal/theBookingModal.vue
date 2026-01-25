@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { vMaska } from "maska/vue";
 import {
   useBookingStore,
   type IService,
@@ -18,7 +19,7 @@ interface DateSlot {
 
 interface Props {
   services: IService[];
-  dates: DateSlot[]; // Використовуємо новий інтерфейс
+  dates: DateSlot[];
 }
 const props = defineProps<Props>();
 
@@ -55,30 +56,23 @@ const selectedTime = ref<string | null>(orderData.value.time);
 
 const formatDayAndDate = (dateString: string): string => {
   const date = new Date(dateString);
-  // Перевірка на валідність дати, хоча вона має бути валідна, оскільки приходить з бекенду
   if (isNaN(date.getTime())) {
     return dateString;
   }
 
-  // Використовуємо "uk-UA" для отримання української назви дня тижня та місяця
   const options: Intl.DateTimeFormatOptions = {
-    weekday: "short", // Пн, Вт, Ср, ...
-    day: "2-digit", // 08
-    month: "short", // Гру
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
   };
 
   const formatted = date.toLocaleDateString("uk-UA", options);
 
-  // Приведення першої літери дня тижня до верхнього регістру,
-  // і заміна 'гр.' на 'гру.' для кращого вигляду
   return (
     formatted.charAt(0).toUpperCase() + formatted.slice(1).replace(".", "")
   );
 };
 
-/**
- * Обчислюваний список часових слотів для обраної дати.
- */
 const selectedDateSlots = computed<TimeSlot[]>(() => {
   if (!selectedDate.value) {
     return [];
@@ -88,25 +82,17 @@ const selectedDateSlots = computed<TimeSlot[]>(() => {
 });
 
 const selectServiceAndNext = (id: string) => {
-  // Встановлюємо послугу через setter, який вже викликає setService(service)
   selectedServiceId.value = id;
-
-  // Оскільки setService() був викликаний, isStepComplete тепер true,
-  // і ми можемо перейти на наступний крок.
   if (bookingStore.isStepComplete) {
     nextStep();
   }
 };
 
-// Автоматично обираємо перший день, якщо дата ще не обрана.
-// Виконується тільки на початку.
 if (!selectedDate.value && props.dates.length > 0) {
   selectedDate.value = props.dates[0].date;
 }
 
-// Перевіряємо, чи обраний час валідний для нової дати.
 watch(selectedDate, (newDate) => {
-  // Якщо обрано нову дату, але раніше обраний час недоступний або зайнятий, скидаємо час.
   if (newDate) {
     const currentSlots =
       props.dates.find((d) => d.date === newDate)?.times || [];
@@ -116,15 +102,10 @@ watch(selectedDate, (newDate) => {
     );
 
     if (!isTimeStillAvailable) {
-      selectedTime.value = null; // Скидаємо, якщо час зайнятий або недоступний
+      selectedTime.value = null;
     }
   }
 });
-
-// --- КІНЕЦЬ НОВОЇ ЛОГІКИ ДАТИ ТА ЧАСУ ---
-
-// Видалено: minDate, validateDate, validateTime, availableTimeSlots
-// Збережено: watch для setDateAndTime та логіка контакту й сабміту
 
 watch([selectedDate, selectedTime], ([newDate, newTime]) => {
   setDateAndTime(newDate, newTime);
@@ -148,7 +129,6 @@ watch(
 );
 
 const handleSubmit = async () => {
-  // Додаємо перевірку полів контактної форми перед сабмітом
   const { name, phone, email, message } = orderData.value;
 
   if (!isStepComplete.value) return;
@@ -160,7 +140,7 @@ const handleSubmit = async () => {
     !name ||
     !phone ||
     !email ||
-    !message // Перевірка повідомлення
+    !message
   ) {
     bookingStore.error =
       "Помилка: Заповніть усі обов'язкові поля, включаючи коментар.";
@@ -295,8 +275,10 @@ const handleSubmit = async () => {
               <input
                 type="tel"
                 v-model="contactForm.phone"
+                v-maska
+                data-maska="+38 (###) ###-##-##"
+                placeholder="+38 (099) 999-99-99"
                 required
-                mask="+38 (###) ###-##-##"
               />
             </label>
             <label>
