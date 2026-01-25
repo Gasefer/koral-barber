@@ -292,7 +292,12 @@ const handleSubmit = async () => {
             </label>
             <label>
               Телефон <span style="color: red">*</span>
-              <input type="tel" v-model="contactForm.phone" required />
+              <input
+                type="tel"
+                v-model="contactForm.phone"
+                required
+                mask="+38 (###) ###-##-##"
+              />
             </label>
             <label>
               Email <span style="color: red">*</span>
