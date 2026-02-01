@@ -138,10 +138,7 @@ const handleSubmit = async () => {
     !orderData.value.date ||
     !orderData.value.time ||
     !name ||
-    !phone ||
-    !email ||
-    !message
-  ) {
+    !phone  ) {
     bookingStore.error =
       "Помилка: Заповніть усі обов'язкові поля, включаючи коментар.";
     return;
@@ -282,11 +279,11 @@ const handleSubmit = async () => {
               />
             </label>
             <label>
-              Email <span style="color: red">*</span>
+              Email 
               <input type="email" required v-model="contactForm.email" />
             </label>
             <label>
-              Коментар <span style="color: red">*</span>
+              Коментар 
               <textarea
                 class="booking-modal__textarea"
                 type="message"
