@@ -280,14 +280,13 @@ const handleSubmit = async () => {
             </label>
             <label>
               Email 
-              <input type="email" required v-model="contactForm.email" />
+              <input type="email" v-model="contactForm.email" />
             </label>
             <label>
               Коментар 
               <textarea
                 class="booking-modal__textarea"
                 type="message"
-                required
                 v-model="contactForm.message"
                 placeholder="Введіть ваше повідомлення"
               />
