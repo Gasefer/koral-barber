@@ -188,6 +188,7 @@ const handleSubmit = async () => {
           <h3>Оберіть послугу</h3>
           <ul class="service-list">
             <li
+            v-show="service.price > 0"
               v-for="service in props.services"
               :key="service.id"
               class="service-item"
