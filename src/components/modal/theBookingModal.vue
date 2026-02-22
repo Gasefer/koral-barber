@@ -34,6 +34,7 @@ const {
   isStepComplete,
   stepTitle,
 } = storeToRefs(bookingStore);
+
 const {
   setService,
   setDateAndTime,
@@ -92,18 +93,9 @@ if (!selectedDate.value && props.dates.length > 0) {
   selectedDate.value = props.dates[0].date;
 }
 
-watch(selectedDate, (newDate) => {
-  if (newDate) {
-    const currentSlots =
-      props.dates.find((d) => d.date === newDate)?.times || [];
-
-    const isTimeStillAvailable = currentSlots.some(
-      (slot) => slot.time === selectedTime.value && slot.reserved_at === null
-    );
-
-    if (!isTimeStillAvailable) {
-      selectedTime.value = null;
-    }
+watch(selectedDate, (newDate, oldDate) => {
+  if (oldDate && newDate !== oldDate) {
+    selectedTime.value = null;
   }
 });
 
@@ -125,7 +117,7 @@ watch(
   (newForm) => {
     setContactInfo(newForm);
   },
-  { deep: true }
+  { deep: true },
 );
 
 const handleSubmit = async () => {
@@ -138,7 +130,8 @@ const handleSubmit = async () => {
     !orderData.value.date ||
     !orderData.value.time ||
     !name ||
-    !phone  ) {
+    !phone
+  ) {
     bookingStore.error =
       "Помилка: Заповніть усі обов'язкові поля, включаючи коментар.";
     return;
@@ -188,7 +181,7 @@ const handleSubmit = async () => {
           <h3>Оберіть послугу</h3>
           <ul class="service-list">
             <li
-            v-show="service.price > 0"
+              v-show="service.price > 0"
               v-for="service in props.services"
               :key="service.id"
               class="service-item"
@@ -229,26 +222,26 @@ const handleSubmit = async () => {
                 </select>
               </label>
             </div>
-
-            <div class="time-selector" v-if="selectedDate">
-              <label>
+            <div class="time-selector time-selector--time" v-if="selectedDate">
+              <div class="time-content">
                 Час
-                <select v-model="selectedTime" required>
-                  <option :value="null" disabled>Оберіть час</option>
-                  <option
+                <div class="time-grid">
+                  <div
                     v-for="timeSlot in selectedDateSlots"
                     :key="timeSlot.time"
-                    :value="timeSlot.time"
-                    :disabled="!!timeSlot.reserved_at"
-                    :class="{ 'is-reserved': !!timeSlot.reserved_at }"
+                    class="time-slot"
+                    :class="{
+                      'is-reserved': !!timeSlot.reserved_at,
+                      'is-selected': timeSlot.time === selectedTime,
+                    }"
+                    @click="
+                      !timeSlot.reserved_at && (selectedTime = timeSlot.time)
+                    "
                   >
                     {{ timeSlot.time }}
-                    <span v-if="!!timeSlot.reserved_at" style="color: grey"
-                      >(Зайнято)</span
-                    >
-                  </option>
-                </select>
-              </label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <p v-if="!selectedDate" style="margin-top: 10px; color: #555">
@@ -280,11 +273,11 @@ const handleSubmit = async () => {
               />
             </label>
             <label>
-              Email 
+              Email
               <input type="email" v-model="contactForm.email" />
             </label>
             <label>
-              Коментар 
+              Коментар
               <textarea
                 class="booking-modal__textarea"
                 type="message"
