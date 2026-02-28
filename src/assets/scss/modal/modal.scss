@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100dvh;
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 1000;
   overflow-y: auto;
@@ -29,8 +29,10 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   position: relative;
   color: $default;
-  max-height: 70%;
   overflow: auto;
+  max-height: 100dvh; /* Замість 100% або 100vh */
+  height: -webkit-fill-available;
+  margin: 0;
 
   // --- МЕДІА СТИЛІ ДЛЯ ТАБЛЕТІВ ТА МОБІЛЬНИХ (max-width: 768px) ---
   @media (max-width: 768px) {
