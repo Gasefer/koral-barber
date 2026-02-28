@@ -40,10 +40,13 @@ const galleryItems = computed(() => {
 
       <div class="gallery__grid">
         <div v-for="item in galleryItems" :key="item.id" class="gallery__item">
-          <img
+          <NuxtImg
             :src="item.url"
             :alt="`Галерея, фото ${item.id}`"
             class="gallery__image"
+            loading="lazy"
+            format="webp"
+            sizes="100vw sm:50vw md:33vw lg:25vw"
           />
         </div>
       </div>
