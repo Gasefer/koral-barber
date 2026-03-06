@@ -48,16 +48,16 @@ onUnmounted(() => {
       <nav class="header__nav">
         <ul class="header__list header__list--desktop">
           <li class="header__item">
-            <NuxtLink to="#about" class="header__link">Про нас</NuxtLink>
+            <NuxtLink to="/about" class="header__link">Про нас</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#services" class="header__link">Послуги</NuxtLink>
+            <NuxtLink to="/services" class="header__link">Послуги</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#gallery" class="header__link">Галерея</NuxtLink>
+            <NuxtLink to="/gallery" class="header__link">Галерея</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#contacts" class="header__link">Контакти</NuxtLink>
+            <NuxtLink to="/contacts" class="header__link">Контакти</NuxtLink>
           </li>
           <li class="header__item">
             <HeaderBookingButton />
@@ -70,16 +70,16 @@ onUnmounted(() => {
           @click="toggleMenu"
         >
           <li class="header__item">
-            <NuxtLink to="#about" class="header__link">Про нас</NuxtLink>
+            <NuxtLink to="/about" class="header__link">Про нас</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#services" class="header__link">Послуги</NuxtLink>
+            <NuxtLink to="/services" class="header__link">Послуги</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#gallery" class="header__link">Галерея</NuxtLink>
+            <NuxtLink to="/gallery" class="header__link">Галерея</NuxtLink>
           </li>
           <li class="header__item">
-            <NuxtLink to="#contacts" class="header__link">Контакти</NuxtLink>
+            <NuxtLink to="/contacts" class="header__link">Контакти</NuxtLink>
           </li>
           <li class="header__item">
             <HeaderBookingButton />

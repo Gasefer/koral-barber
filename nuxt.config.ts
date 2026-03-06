@@ -6,7 +6,6 @@ export default defineNuxtConfig({
       GQL_HOST: "https://admin.koralbarber.com.ua/graphql",
     },
   },
-  ssr: false,
   nitro: {
     preset: "vercel",
   },

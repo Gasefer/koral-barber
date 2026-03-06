@@ -15,14 +15,14 @@ const getDataValue = (dataArray, key) => {
 
 const getKeyValue = (key) => {
   const block = props.blockData.find(
-    (b) => b.type === "key-value" && getDataValue(b.data, "key") === key
+    (b) => b.type === "key-value" && getDataValue(b.data, "key") === key,
   );
   return block ? getDataValue(block.data, "value") : null;
 };
 
 const getTitleValue = (titleKey) => {
   const block = props.blockData.find(
-    (b) => b.type === "title" && getDataValue(b.data, "title") === titleKey
+    (b) => b.type === "title" && getDataValue(b.data, "title") === titleKey,
   );
   return block ? getDataValue(block.data, "title") : null;
 };
@@ -123,17 +123,17 @@ const socialMediaLinks = computed(() => {
             <h3 class="footer__title">Навігація</h3>
             <ul class="footer__nav-list">
               <li class="footer__nav-item">
-                <NuxtLink to="#about" class="footer__nav-link"
+                <NuxtLink to="/about" class="footer__nav-link"
                   >Про нас</NuxtLink
                 >
               </li>
               <li class="footer__nav-item">
-                <NuxtLink to="#services" class="footer__nav-link"
+                <NuxtLink to="/services" class="footer__nav-link"
                   >Послуги</NuxtLink
                 >
               </li>
               <li class="footer__nav-item">
-                <NuxtLink to="#gallery" class="footer__nav-link"
+                <NuxtLink to="/gallery" class="footer__nav-link"
                   >Галерея</NuxtLink
                 >
               </li>
