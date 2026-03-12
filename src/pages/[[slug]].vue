@@ -5,7 +5,6 @@ const route = useRoute();
 const pageSlug = "main";
 const currentSlug = computed(() => route.params.slug || "main");
 
-// ОГОЛОШУЄМО ВСІ РЕФИ (назви мають збігатися з тими, що в template)
 const heroRef = ref(null);
 const aboutRef = ref(null);
 const servicesRef = ref(null);
@@ -39,7 +38,8 @@ interface IGqlMainPageResponse {
         data: {
           key: string;
           type: string;
-          value: unknown;
+          value: any;
+          items?: any;
         }[];
       }[];
     }[];
@@ -76,23 +76,21 @@ const activeBlock = computed(() => {
 const getSeoFromBlock = (keyName: string) => {
   if (!activeBlock.value) return null;
 
-  for (const subBlock of activeBlock.value.block) {
-    if (subBlock.type === "key-value") {
-      const keyEntry = subBlock.data.find(
-        (d) => d.key === "key" && d.value === keyName,
-      );
-      if (keyEntry) {
-        const valueEntry = subBlock.data.find((d) => d.key === "value");
-        return valueEntry?.value || null;
-      }
-    }
+  // Шукаємо підблок з типом "seo"
+  const seoSubBlock = activeBlock.value.block.find((sub) => sub.type === "seo");
+
+  if (seoSubBlock) {
+    // Шукаємо потрібний ключ (title або description) у масиві data
+    const entry = seoSubBlock.data.find((d) => d.key === keyName);
+    return entry?.value || null;
   }
+
   return null;
 };
 
 const dynamicTitle = computed(() => {
   return (
-    getSeoFromBlock("seo_title") ||
+    getSeoFromBlock("title") ||
     typedResponse.value?.page?.seo_title ||
     "Koral Barber"
   );
@@ -100,7 +98,7 @@ const dynamicTitle = computed(() => {
 
 const dynamicDescription = computed(() => {
   return (
-    getSeoFromBlock("seo_description") ||
+    getSeoFromBlock("description") ||
     typedResponse.value?.page?.seo_description ||
     "Koral Barber - найкраща перукарня у Луцьку!"
   );
@@ -132,7 +130,6 @@ const availableBookingDates = computed<IDateSlot[]>(
   () => typedResponse.value?.settings?.dates || [],
 );
 
-// Тепер використовуємо правильний реф для сервісів
 const actualServices = computed<IService[]>(() => {
   if (servicesRef.value && (servicesRef.value as any).flatServicesList) {
     return (servicesRef.value as any).flatServicesList;
