@@ -207,6 +207,7 @@ watch(currentSlug, () => {
       <ModalTheBookingModal
         :services="actualServices"
         :dates="availableBookingDates"
+        :servicesData="servicesData"
       />
     </ClientOnly>
   </div>

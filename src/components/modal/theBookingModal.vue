@@ -20,6 +20,7 @@ interface DateSlot {
 interface Props {
   services: IService[];
   dates: DateSlot[];
+  servicesData: any[];
 }
 const props = defineProps<Props>();
 
@@ -44,6 +45,8 @@ const {
   prevStep,
 } = bookingStore;
 
+const activeTab = ref(0);
+
 const selectedServiceId = computed({
   get: () => orderData.value.service?.id || null,
   set: (id) => {
@@ -57,9 +60,7 @@ const selectedTime = ref<string | null>(orderData.value.time);
 
 const formatDayAndDate = (dateString: string): string => {
   const date = new Date(dateString);
-  if (isNaN(date.getTime())) {
-    return dateString;
-  }
+  if (isNaN(date.getTime())) return dateString;
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "short",
@@ -68,16 +69,51 @@ const formatDayAndDate = (dateString: string): string => {
   };
 
   const formatted = date.toLocaleDateString("uk-UA", options);
-
   return (
     formatted.charAt(0).toUpperCase() + formatted.slice(1).replace(".", "")
   );
 };
 
+const getDataValue = (dataArray, key) => {
+  if (!Array.isArray(dataArray)) return null;
+  return dataArray.find((d) => d.key === key)?.value;
+};
+
+const serviceLists = computed(() => {
+  const lists = props.servicesData
+    .filter((b) => b.type === "service-list")
+    .map((listBlock) => {
+      const title = getDataValue(listBlock.data, "title");
+      const itemsBlock = listBlock.data.find((d) => d.key === "items");
+      const itemsRaw = itemsBlock?.items || [];
+
+      const items = itemsRaw
+        .map((item) => {
+          const name = getDataValue(item.data, "name");
+          const price = getDataValue(item.data, "price");
+
+          // Мапимо id з основного списку послуг за назвою
+          const matchedService = props.services.find((s) => s.name === name);
+
+          return {
+            name: name || "Послуга",
+            price: price || 0,
+            id: matchedService?.id || null,
+          };
+        })
+        .filter((item) => item.id); // Залишаємо тільки ті, що мають id
+
+      return {
+        title: title || "Категорія",
+        items: items,
+      };
+    });
+
+  return lists;
+});
+
 const selectedDateSlots = computed<TimeSlot[]>(() => {
-  if (!selectedDate.value) {
-    return [];
-  }
+  if (!selectedDate.value) return [];
   const dateSlot = props.dates.find((d) => d.date === selectedDate.value);
   return dateSlot ? dateSlot.times : [];
 });
@@ -112,17 +148,10 @@ const contactForm = reactive<
   message: orderData.value.message,
 });
 
-watch(
-  contactForm,
-  (newForm) => {
-    setContactInfo(newForm);
-  },
-  { deep: true },
-);
+watch(contactForm, (newForm) => setContactInfo(newForm), { deep: true });
 
 const handleSubmit = async () => {
   const { name, phone, email, message } = orderData.value;
-
   if (!isStepComplete.value) return;
 
   if (
@@ -132,8 +161,7 @@ const handleSubmit = async () => {
     !name ||
     !phone
   ) {
-    bookingStore.error =
-      "Помилка: Заповніть усі обов'язкові поля, включаючи коментар.";
+    bookingStore.error = "Помилка: Заповніть усі обов'язкові поля.";
     return;
   }
 
@@ -179,10 +207,22 @@ const handleSubmit = async () => {
       <form @submit.prevent="handleSubmit" class="booking-modal__form">
         <div v-show="currentStep === 1" class="booking-modal__step step-1">
           <h3>Оберіть послугу</h3>
+          <div class="booking-modal__tabs">
+            <button
+              v-for="(list, index) in serviceLists"
+              :key="index"
+              type="button"
+              class="booking-modal__tab"
+              :class="{ 'booking-modal__tab--active': activeTab === index }"
+              @click="activeTab = index"
+            >
+              {{ list.title }}
+            </button>
+          </div>
+
           <ul class="service-list">
             <li
-              v-show="service.price > 0"
-              v-for="service in props.services"
+              v-for="service in serviceLists[activeTab]?.items"
               :key="service.id"
               class="service-item"
               @click="selectServiceAndNext(service.id)"
@@ -244,13 +284,6 @@ const handleSubmit = async () => {
               </div>
             </div>
           </div>
-          <p v-if="!selectedDate" style="margin-top: 10px; color: #555">
-            Оберіть дату, щоб побачити доступний час.
-          </p>
-
-          <p v-if="currentStep === 2 && !isStepComplete" class="error-message">
-            Оберіть дату та час для запису.
-          </p>
         </div>
 
         <div v-show="currentStep === 3" class="booking-modal__step step-3">
@@ -280,7 +313,6 @@ const handleSubmit = async () => {
               Коментар
               <textarea
                 class="booking-modal__textarea"
-                type="message"
                 v-model="contactForm.message"
                 placeholder="Введіть ваше повідомлення"
               />
