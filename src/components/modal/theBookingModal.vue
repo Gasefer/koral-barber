@@ -228,6 +228,7 @@ const handleSubmit = async () => {
               @click="selectServiceAndNext(service.id)"
             >
               <input
+                v-if="service.id !== 'srv-15' && service.id !== 'srv-16'"
                 type="radio"
                 :id="`service-${service.id}`"
                 :value="service.id"
