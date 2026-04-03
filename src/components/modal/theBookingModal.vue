@@ -119,6 +119,10 @@ const selectedDateSlots = computed<TimeSlot[]>(() => {
 });
 
 const selectServiceAndNext = (id: string) => {
+  if (id == "srv-15" || id == "srv-16") {
+    return;
+  }
+
   selectedServiceId.value = id;
   if (bookingStore.isStepComplete) {
     nextStep();
@@ -239,7 +243,7 @@ const handleSubmit = async () => {
                 class="service-item__content"
               >
                 <span>{{ service.name }}</span>
-                <strong v-if="service?.price">{{ service.price }} грн</strong>
+                <strong v-if="service?.price">{{ service.price }}</strong>
               </label>
             </li>
           </ul>
