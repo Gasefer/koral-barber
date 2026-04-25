@@ -29,7 +29,7 @@ onUnmounted(() => {
         <NuxtImg
           src="/images/logo.webp"
           alt="Koral Barbershop Logo"
-          width="50"
+          width="auto"
           height="50"
         />
       </NuxtLink>
