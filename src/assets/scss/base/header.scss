@@ -40,6 +40,9 @@
         transform: scale(1.05);
       }
     }
+    @media (max-width: 400px) {
+      padding: 10px 30px;
+    }
   }
 
   &__list {
