@@ -184,14 +184,14 @@
 
     &--button {
       padding: 10px 20px;
-      border: 2px solid $text;
-      background-color: transparent;
+      border: 2px solid $default;
+      background-color: $default;
       border-radius: 4px;
       font-weight: 700;
 
       &:hover {
-        background-color: $default;
-        border-color: $default;
+        background-color: $third;
+        border-color: $third;
         color: $text;
       }
     }
